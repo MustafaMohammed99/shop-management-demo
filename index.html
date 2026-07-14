@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نموذج نظام إدارة المحل</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#0f9d93;--primary-dark:#087c75;--primary-soft:#e7f7f5;
+      --accent:#ff7657;--accent-soft:#fff0ec;--success:#19a86b;--warning:#ee9b22;
+      --danger:#df4d57;--info:#3a86e8;--text:#20333b;--muted:#71838b;
+      --border:#e4ebed;--background:#f4f7f8;--card:#fff;--sidebar:#123e43;
+      --shadow:0 10px 30px rgba(22,52,58,.08);--radius:16px
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;font-family:"Cairo",sans-serif;background:var(--background);color:var(--text);font-size:14px}
+    button,input,select,textarea{font:inherit}button{cursor:pointer}
+    .prototype{position:fixed;top:0;right:0;left:0;z-index:1100;height:34px;background:linear-gradient(90deg,var(--accent),#ff9c4a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:.1px}
+    .app{min-height:100vh;padding-top:34px}.sidebar{position:fixed;right:0;top:34px;bottom:0;width:255px;background:linear-gradient(180deg,#123e43,#0c3035);color:#fff;z-index:1000;transition:.25s;overflow-y:auto}
+    .brand{height:82px;display:flex;align-items:center;gap:12px;padding:0 22px;border-bottom:1px solid rgba(255,255,255,.09)}
+    .brand-logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#21c5b7,#ff8266);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+    .brand h2{font-size:16px;margin:0}.brand small{opacity:.7}
+    .nav{padding:16px 12px}.nav-title{padding:5px 13px 10px;font-size:11px;opacity:.5}
+    .nav-item{width:100%;border:0;color:#d8eaeb;background:transparent;border-radius:11px;padding:11px 13px;margin:2px 0;display:flex;align-items:center;gap:11px;text-align:right;transition:.2s}
+    .nav-item:hover,.nav-item.active{color:#fff;background:rgba(36,200,187,.18)}.nav-item.active{box-shadow:inset -3px 0 #30cabc}
+    .nav-icon{width:23px;text-align:center;font-size:17px}.main{margin-right:255px;min-height:calc(100vh - 34px)}
+    .topbar{height:72px;background:rgba(255,255,255,.95);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:34px;z-index:900;backdrop-filter:blur(10px)}
+    .top-title h1{font-size:19px;margin:0}.top-title span{color:var(--muted);font-size:12px}
+    .top-actions{display:flex;align-items:center;gap:11px}.icon-btn{width:42px;height:42px;border:1px solid var(--border);border-radius:12px;background:#fff;position:relative}
+    .notification-dot{position:absolute;width:8px;height:8px;background:var(--danger);border-radius:50%;top:8px;right:8px;border:2px solid #fff}
+    .user{display:flex;align-items:center;gap:10px;padding-right:9px}.avatar{width:40px;height:40px;border-radius:50%;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:800}
+    .user strong{display:block;font-size:13px}.user small{color:var(--muted)}.menu-toggle{display:none}
+    .content{padding:24px;max-width:1600px;margin:auto}.page{display:none;animation:fade .22s ease}.page.active{display:block}@keyframes fade{from{opacity:.3;transform:translateY(5px)}}
+    .page-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}.page-head h2{margin:0;font-size:22px}.page-head p{margin:4px 0 0;color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.2s}
+    .btn:hover{transform:translateY(-1px)}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+    .btn-light{background:#fff;border:1px solid var(--border);color:var(--text)}.btn-danger{background:var(--danger);color:#fff}.btn-accent{background:var(--accent);color:#fff}
+    .btn-sm{padding:7px 10px;font-size:12px}.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:20px}
+    .stat{background:var(--card);padding:17px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(228,235,237,.8)}
+    .stat-top{display:flex;justify-content:space-between;align-items:center}.stat-icon{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:18px;background:var(--primary-soft)}
+    .stat-label{color:var(--muted);font-size:12px}.stat-value{font-size:23px;font-weight:800;margin:9px 0 1px}.stat-note{font-size:10px;color:var(--success)}
+    .grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:18px}.grid-equal{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card-head{padding:17px 19px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.card-head h3{font-size:15px;margin:0}.card-body{padding:18px}
+    .table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;white-space:nowrap}.table th{background:#f7f9fa;color:var(--muted);font-size:11px;text-align:right;padding:12px;border-bottom:1px solid var(--border)}
+    .table td{padding:12px;border-bottom:1px solid #edf1f2;font-size:12px}.table tr:last-child td{border-bottom:0}.table tbody tr:hover{background:#fbfdfd}
+    .badge{display:inline-flex;padding:4px 9px;border-radius:20px;font-size:10px;font-weight:800}.paid,.active-badge{background:#e7f7ef;color:var(--success)}.partial{background:#fff3df;color:#c97808}.unpaid,.inactive{background:#fdebee;color:var(--danger)}.info{background:#e9f2ff;color:var(--info)}
+    .filters{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:10px;padding:14px;background:#fff;border:1px solid var(--border);border-radius:14px;margin-bottom:16px}
+    .input,.select,.textarea{width:100%;border:1px solid #dce5e7;background:#fff;border-radius:10px;padding:10px 12px;outline:none;color:var(--text)}.input:focus,.select:focus,.textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.form-group label{display:block;font-weight:700;font-size:12px;margin-bottom:6px}.form-group small{color:var(--muted)}.full{grid-column:1/-1}
+    .category-grid,.product-grid,.report-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+    .entity-card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:17px;box-shadow:var(--shadow)}.entity-card .entity-icon{width:46px;height:46px;background:var(--primary-soft);border-radius:14px;display:grid;place-items:center;font-size:21px;margin-bottom:13px}
+    .entity-card h3{margin:0 0 4px;font-size:15px}.entity-card p{color:var(--muted);font-size:11px;min-height:34px}.entity-footer{display:flex;justify-content:space-between;align-items:center;margin-top:13px}
+    .chart{height:220px;display:flex;align-items:flex-end;gap:12px;padding:15px 5px 0}.bar-group{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:7px}.bar{width:70%;max-width:35px;border-radius:8px 8px 2px 2px;background:linear-gradient(180deg,#22c7b8,var(--primary));transition:.3s}.bar:hover{filter:brightness(.9)}.bar-group span{font-size:10px;color:var(--muted)}
+    .comparison{display:flex;gap:12px}.compare-item{flex:1;border:1px solid var(--border);border-radius:13px;padding:15px}.progress{height:7px;background:#edf1f2;border-radius:10px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;background:var(--primary);border-radius:10px}
+    .notice{padding:13px 15px;border-radius:12px;background:var(--primary-soft);color:var(--primary-dark);font-size:12px;margin-bottom:16px;border-right:4px solid var(--primary)}
+    .order-layout{display:grid;grid-template-columns:1.8fr .8fr;gap:18px}.order-summary{position:sticky;top:125px}.summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--border)}.summary-row.total{font-size:17px;font-weight:800;border-bottom:0}.remaining-box{text-align:center;background:var(--accent-soft);border-radius:13px;padding:15px;margin:14px 0}.remaining-box strong{display:block;font-size:25px;color:var(--accent)}
+    .tabs{display:flex;gap:5px;border-bottom:1px solid var(--border);margin-bottom:15px}.tab{border:0;background:transparent;padding:11px 18px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent}.tab.active{color:var(--primary);border-color:var(--primary)}
+    .timeline{position:relative;padding-right:25px}.timeline:before{content:"";position:absolute;right:7px;top:5px;bottom:5px;width:2px;background:var(--border)}.timeline-item{position:relative;margin-bottom:15px;background:#f8fafb;padding:12px;border-radius:11px}.timeline-item:before{content:"";position:absolute;right:-23px;top:15px;width:10px;height:10px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 1px var(--primary)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(8,26,30,.58);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}.modal-overlay.show{display:flex}
+    .modal{background:#fff;width:min(670px,100%);max-height:92vh;overflow:auto;border-radius:19px;box-shadow:0 25px 80px rgba(0,0,0,.25);animation:pop .2s ease}.modal.large{width:min(950px,100%)}@keyframes pop{from{transform:scale(.95);opacity:.5}}
+    .modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}.modal-head h3{margin:0}.modal-close{border:0;background:#f1f4f5;border-radius:9px;width:34px;height:34px;font-size:18px}
+    .modal-body{padding:20px}.modal-footer{padding:15px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+    .toast-container{position:fixed;left:20px;bottom:20px;z-index:3000}.toast{background:#153e42;color:#fff;padding:13px 17px;border-radius:12px;box-shadow:0 15px 35px rgba(0,0,0,.2);margin-top:8px;animation:toastIn .25s ease;min-width:260px}.toast.success{border-right:5px solid #34d399}.toast.error{border-right:5px solid var(--danger)}@keyframes toastIn{from{transform:translateY(20px);opacity:0}}
+    .customer-header{display:flex;align-items:center;gap:15px}.customer-avatar{width:65px;height:65px;border-radius:20px;background:var(--primary-soft);display:grid;place-items:center;color:var(--primary);font-size:23px;font-weight:800}.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.mini-stat{background:#f7fafb;border-radius:12px;padding:13px;text-align:center}.mini-stat strong{display:block;font-size:18px}
+    .switch{display:inline-flex;align-items:center;gap:7px}.switch input{accent-color:var(--primary);width:17px;height:17px}
+    .empty{text-align:center;color:var(--muted);padding:30px}.mobile-overlay{display:none}
+    @media(max-width:1200px){.stats{grid-template-columns:repeat(3,1fr)}.category-grid,.product-grid,.report-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:850px){
+      .sidebar{transform:translateX(100%)}.sidebar.open{transform:translateX(0)}.main{margin-right:0}.menu-toggle{display:block}.topbar{padding:0 14px}.content{padding:15px}.user div:last-child{display:none}
+      .mobile-overlay.show{display:block;position:fixed;inset:34px 0 0;background:rgba(0,0,0,.4);z-index:950}.grid-2,.grid-equal,.order-layout{grid-template-columns:1fr}.order-summary{position:static}.filters{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:560px){.stats{grid-template-columns:1fr 1fr;gap:9px}.stat{padding:13px}.stat-value{font-size:19px}.category-grid,.product-grid,.report-grid,.form-grid,.mini-stats{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.page-head .btn{width:100%}.top-title span{display:none}.comparison{flex-direction:column}.content{padding:12px}.prototype{font-size:10px}}
+    @media print{.prototype,.sidebar,.topbar,.page-head .actions,.filters,.btn{display:none!important}.main{margin:0}.content{padding:0}.page{display:none!important}.page.active{display:block!important}.card{box-shadow:none}}
+  </style>
+</head>
+<body>
+<div class="prototype">◆ نموذج أولي لعرض فكرة النظام — جميع البيانات المعروضة تجريبية</div>
+<div class="app">
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-logo">❄</div><div><h2 id="brandName">محلي لإدارة الأعمال</h2><small>إدارة سهلة وواضحة</small></div></div>
+    <nav class="nav">
+      <div class="nav-title">القائمة الرئيسية</div>
+      <button class="nav-item active" data-page="dashboard"><span class="nav-icon">▦</span>لوحة التحكم</button>
+      <button class="nav-item" data-page="categories"><span class="nav-icon">▤</span>الأقسام</button>
+      <button class="nav-item" data-page="products"><span class="nav-icon">◫</span>الأصناف والخدمات</button>
+      <button class="nav-item" data-page="new-order"><span class="nav-icon">＋</span>إنشاء طلب جديد</button>
+      <button class="nav-item" data-page="orders"><span class="nav-icon">▧</span>الطلبات</button>
+      <button class="nav-item" data-page="customers"><span class="nav-icon">♙</span>الزبائن</button>
+      <button class="nav-item" data-page="debts"><span class="nav-icon">◴</span>الديون</button>
+      <button class="nav-item" data-page="payments"><span class="nav-icon">₪</span>الدفعات</button>
+      <button class="nav-item" data-page="reports"><span class="nav-icon">▥</span>التقارير</button>
+      <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span>الإعدادات</button>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button class="icon-btn menu-toggle" id="menuToggle">☰</button>
+        <div class="top-title"><h1 id="pageTitle">لوحة التحكم</h1><span>مرحبًا بك، إليك ملخص أعمال المحل</span></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" onclick="toast('لا توجد تنبيهات جديدة حاليًا')">🔔<i class="notification-dot"></i></button>
+        <div class="user"><div class="avatar">م</div><div><strong>محمد أحمد</strong><small>مدير النظام</small></div></div>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-dashboard">
+        <div class="page-head"><div><h2>نظرة عامة</h2><p>ملخص حركة المبيعات والطلبات والديون اليوم.</p></div><button class="btn btn-primary" onclick="goPage('new-order')">＋ إنشاء طلب جديد</button></div>
+        <div class="stats">
+          <div class="stat"><div class="stat-top"><span class="stat-label">مبيعات اليوم</span><span class="stat-icon">🛍</span></div><div class="stat-value">850 ₪</div><div class="stat-note">↑ 12% عن الأمس</div></div>
+          <div class="stat"><div class="stat-top"><span class="stat-label">المقبوض اليوم</span><span class="stat-icon">₪</span></div><div class="stat-value">600 ₪</div><div class="stat-note">من 11 عملية دفع</div></div>
+          <div class="stat"><div class="stat-top"><span class="stat-label">المتبقي اليوم</span><span class="stat-icon">◴</span></div><div class="stat-value">250 ₪</div><div class="stat-note" style="color:var(--warning)">يضاف تلقائيًا للديون</div></div>
+          <div class="stat"><div class="stat-top"><span class="stat-label">إجمالي الديون</span><span class="stat-icon">!</span></div><div class="stat-value" id="dashboardDebt">1,450 ₪</div><div class="stat-note" style="color:var(--danger)">تحتاج للمتابعة</div></div>
+          <div class="stat"><div class="stat-top"><span class="stat-label">طلبات اليوم</span><span class="stat-icon">▧</span></div><div class="stat-value">18</div><div class="stat-note">تم إنجاز 13 طلبًا</div></div>
+          <div class="stat"><div class="stat-top"><span class="stat-label">الزبائن المدينون</span><span class="stat-icon">♙</span></div><div class="stat-value">7</div><div class="stat-note">على 9 طلبات</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-head"><h3>المبيعات خلال الأسبوع</h3><span class="badge info">آخر 7 أيام</span></div><div class="card-body"><div class="chart">
+            <div class="bar-group"><div class="bar" style="height:42%"></div><span>السبت</span></div><div class="bar-group"><div class="bar" style="height:63%"></div><span>الأحد</span></div><div class="bar-group"><div class="bar" style="height:54%"></div><span>الاثنين</span></div><div class="bar-group"><div class="bar" style="height:78%"></div><span>الثلاثاء</span></div><div class="bar-group"><div class="bar" style="height:66%"></div><span>الأربعاء</span></div><div class="bar-group"><div class="bar" style="height:91%"></div><span>الخميس</span></div><div class="bar-group"><div class="bar" style="height:72%"></div><span>الجمعة</span></div>
+          </div></div></div>
+          <div class="card"><div class="card-head"><h3>المبيعات حسب القسم</h3></div><div class="card-body"><div class="comparison">
+            <div class="compare-item"><span>قسم البوظة</span><h2>510 ₪</h2><small>60% من المبيعات</small><div class="progress"><i style="width:60%"></i></div></div>
+            <div class="compare-item"><span>قسم الغسيل</span><h2>340 ₪</h2><small>40% من المبيعات</small><div class="progress"><i style="width:40%;background:var(--accent)"></i></div></div>
+          </div></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-head"><h3>آخر الطلبات</h3><button class="btn btn-light btn-sm" onclick="goPage('orders')">عرض الكل</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>الزبون</th><th>الإجمالي</th><th>المتبقي</th><th>الحالة</th></tr></thead><tbody id="recentOrders"></tbody></table></div></div>
+          <div class="card"><div class="card-head"><h3>أكثر الزبائن مديونية</h3><button class="btn btn-light btn-sm" onclick="goPage('debts')">متابعة الديون</button></div><div class="table-wrap"><table class="table"><thead><tr><th>الزبون</th><th>الهاتف</th><th>المتبقي</th></tr></thead><tbody><tr><td>أحمد محمد</td><td>0599 123 456</td><td><b style="color:var(--danger)">520 ₪</b></td></tr><tr><td>محمد علي</td><td>0598 654 321</td><td><b style="color:var(--danger)">390 ₪</b></td></tr><tr><td>يوسف خالد</td><td>0569 111 222</td><td><b style="color:var(--danger)">280 ₪</b></td></tr></tbody></table></div></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>آخر الدفعات</h3></div><div class="table-wrap"><table class="table"><thead><tr><th>رقم الدفعة</th><th>الزبون</th><th>الطلب</th><th>المبلغ</th><th>الطريقة</th><th>الوقت</th></tr></thead><tbody id="recentPayments"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-categories">
+        <div class="page-head"><div><h2>الأقسام</h2><p>أنشئ الأقسام المناسبة لنشاط المحل ونظم الأصناف والخدمات.</p></div><button class="btn btn-primary" onclick="openCategoryModal()">＋ إضافة قسم جديد</button></div>
+        <div class="notice">يمكن لصاحب المحل إضافة أقسام جديدة أو تعديلها وتعطيلها في أي وقت.</div>
+        <div class="category-grid" id="categoryGrid"></div>
+      </section>
+
+      <section class="page" id="page-products">
+        <div class="page-head"><div><h2>الأصناف والخدمات</h2><p>إدارة المنتجات والخدمات وأسعار البيع والوحدات.</p></div><button class="btn btn-primary" onclick="openProductModal()">＋ إضافة صنف أو خدمة</button></div>
+        <div class="filters"><input class="input" id="productSearch" placeholder="ابحث عن صنف أو خدمة..." oninput="renderProducts()"><select class="select" id="productCategoryFilter" onchange="renderProducts()"><option value="">جميع الأقسام</option></select><select class="select" id="productTypeFilter" onchange="renderProducts()"><option value="">كل الأنواع</option><option>منتج</option><option>خدمة</option></select><select class="select"><option>جميع الحالات</option><option>فعال</option><option>غير فعال</option></select></div>
+        <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>الاسم</th><th>القسم</th><th>النوع</th><th>الوحدة</th><th>سعر البيع</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="productsTable"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-new-order">
+        <div class="page-head"><div><h2>إنشاء طلب جديد</h2><p>أدخل بيانات الطلب وعناصره ثم حدد المبلغ المدفوع.</p></div><span class="badge info" id="newOrderNumber">طلب رقم ORD-1006</span></div>
+        <div class="order-layout">
+          <div>
+            <div class="card" style="margin-bottom:16px"><div class="card-head"><h3>معلومات الطلب</h3></div><div class="card-body"><div class="form-grid">
+              <div class="form-group"><label>تاريخ الطلب</label><input class="input" type="date" id="orderDate"></div>
+              <div class="form-group"><label>الزبون</label><select class="select" id="orderCustomer" onchange="customerChanged()"><option>أحمد محمد</option><option>محمد علي</option><option>يوسف خالد</option><option>محمود حسن</option><option>زبون نقدي</option></select></div>
+              <div class="form-group"><label>رقم الهاتف</label><input class="input" id="orderPhone" value="0599 123 456"></div>
+              <div class="form-group"><label>نوع التعامل</label><label class="switch"><input type="checkbox" id="cashCustomer" onchange="toggleCashCustomer()"> زبون نقدي</label></div>
+              <div class="form-group full"><label>ملاحظات</label><textarea class="textarea" rows="2" placeholder="أي ملاحظات تخص الطلب..."></textarea></div>
+            </div></div></div>
+            <div class="card"><div class="card-head"><h3>عناصر الطلب</h3><div class="actions"><button class="btn btn-light btn-sm" onclick="openCustomItemModal()">＋ عنصر مخصص</button><button class="btn btn-primary btn-sm" onclick="openItemModal()">＋ إضافة عنصر</button></div></div>
+              <div class="table-wrap"><table class="table"><thead><tr><th>الصنف أو الخدمة</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th></th></tr></thead><tbody id="orderItemsTable"></tbody></table></div>
+            </div>
+          </div>
+          <div class="card order-summary"><div class="card-head"><h3>ملخص الطلب</h3></div><div class="card-body">
+            <div class="summary-row"><span>المجموع الفرعي</span><b id="subtotal">100 ₪</b></div>
+            <div class="summary-row"><span>الخصم</span><div style="width:100px"><input class="input" type="number" min="0" value="0" id="discount" oninput="calculateOrder()"></div></div>
+            <div class="summary-row total"><span>الإجمالي النهائي</span><span id="finalTotal">100 ₪</span></div>
+            <div class="form-group" style="margin-top:13px"><label>المبلغ المدفوع الآن</label><input class="input" type="number" min="0" value="40" id="paidNow" oninput="calculateOrder()"></div>
+            <div class="remaining-box"><span>المبلغ المتبقي</span><strong id="remainingAmount">60 ₪</strong><span class="badge partial" id="paymentStatus">مدفوع جزئيًا</span></div>
+            <div class="notice" id="debtNotice" style="margin-bottom:13px">سيظهر المبلغ المتبقي تلقائيًا في قسم الديون.</div>
+            <div style="display:grid;gap:8px"><button class="btn btn-primary" onclick="saveOrder(false)">✓ حفظ الطلب</button><button class="btn btn-light" onclick="saveOrder(true)">🖨 حفظ وطباعة</button><button class="btn btn-light" onclick="resetOrder()">إلغاء</button></div>
+          </div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-orders">
+        <div class="page-head"><div><h2>سجل الطلبات</h2><p>عرض الطلبات ومتابعة المبالغ المدفوعة والمتبقية.</p></div><button class="btn btn-primary" onclick="goPage('new-order')">＋ طلب جديد</button></div>
+        <div class="filters"><input class="input" id="orderSearch" placeholder="رقم الطلب أو اسم الزبون..." oninput="renderOrders()"><select class="select" id="orderStatusFilter" onchange="renderOrders()"><option value="">كل حالات الدفع</option><option>مدفوع بالكامل</option><option>مدفوع جزئيًا</option><option>غير مدفوع</option></select><select class="select"><option>جميع الأقسام</option><option>بوظة</option><option>غسيل ملابس</option></select><input class="input" type="date"></div>
+        <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>الزبون</th><th>العناصر</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>الحالة</th><th>الإجراءات</th></tr></thead><tbody id="ordersTable"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-customers">
+        <div class="page-head"><div><h2>الزبائن</h2><p>بيانات الزبائن وملخص طلباتهم ودفعاتهم.</p></div><button class="btn btn-primary" onclick="openCustomerModal()">＋ إضافة زبون</button></div>
+        <div class="filters" style="grid-template-columns:2fr 1fr"><input class="input" id="customerSearch" placeholder="ابحث بالاسم أو رقم الهاتف..." oninput="renderCustomers()"><select class="select"><option>جميع الزبائن</option><option>الزبائن المدينون</option><option>دون ديون</option></select></div>
+        <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>اسم الزبون</th><th>رقم الهاتف</th><th>عدد الطلبات</th><th>قيمة الطلبات</th><th>إجمالي المدفوع</th><th>المتبقي عليه</th><th>الإجراءات</th></tr></thead><tbody id="customersTable"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-debts">
+        <div class="page-head"><div><h2>الديون</h2><p>المبالغ المتبقية الناتجة تلقائيًا عن الطلبات غير المسددة.</p></div></div>
+        <div class="notice">لا تُسجل الديون يدويًا؛ يظهر الدين تلقائيًا عندما لا يُدفع الطلب بالكامل.</div>
+        <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat"><span class="stat-label">إجمالي الديون</span><div class="stat-value" id="totalDebts">0 ₪</div></div>
+          <div class="stat"><span class="stat-label">الطلبات غير المسددة</span><div class="stat-value" id="unsettledCount">0</div></div>
+          <div class="stat"><span class="stat-label">الزبائن المدينون</span><div class="stat-value" id="debtorCount">0</div></div>
+        </div>
+        <div class="filters"><select class="select" id="debtStatusFilter" onchange="renderDebts()"><option value="">جميع الديون</option><option>غير مدفوع</option><option>مدفوع جزئيًا</option><option>مسدد</option></select><input class="input" id="debtCustomerFilter" placeholder="ابحث حسب الزبون..." oninput="renderDebts()"><input class="input" type="date"><button class="btn btn-light" onclick="renderDebts()">تحديث النتائج</button></div>
+        <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>الزبون</th><th>الهاتف</th><th>رقم الطلب</th><th>الإجمالي</th><th>المدفوع</th><th>المتبقي</th><th>التاريخ</th><th>حالة الدين</th><th></th></tr></thead><tbody id="debtsTable"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-payments">
+        <div class="page-head"><div><h2>سجل الدفعات</h2><p>جميع المبالغ المسجلة على الطلبات وإيصالات الدفع.</p></div></div>
+        <div class="filters"><input class="input" type="date"><input class="input" id="paymentCustomerFilter" placeholder="اسم الزبون..." oninput="renderPayments()"><select class="select" id="paymentMethodFilter" onchange="renderPayments()"><option value="">جميع طرق الدفع</option><option>نقدي</option><option>تحويل</option><option>أخرى</option></select><button class="btn btn-light" onclick="renderPayments()">تحديث</button></div>
+        <div class="card"><div class="table-wrap"><table class="table"><thead><tr><th>رقم الدفعة</th><th>التاريخ</th><th>الزبون</th><th>رقم الطلب</th><th>المبلغ</th><th>طريقة الدفع</th><th>سجلها</th><th>الإجراءات</th></tr></thead><tbody id="paymentsTable"></tbody></table></div></div>
+      </section>
+
+      <section class="page" id="page-reports">
+        <div class="page-head"><div><h2>التقارير</h2><p>ملخصات تساعد صاحب المحل على متابعة الأداء المالي.</p></div><div class="actions"><button class="btn btn-light" onclick="window.print()">🖨 طباعة</button><button class="btn btn-light" onclick="featureSoon()">PDF</button><button class="btn btn-light" onclick="featureSoon()">Excel</button></div></div>
+        <div class="report-grid" style="margin-bottom:16px">
+          <div class="entity-card"><div class="entity-icon">▥</div><h3>تقرير المبيعات</h3><p>إجمالي المبيعات والطلبات خلال الفترة.</p></div>
+          <div class="entity-card"><div class="entity-icon">₪</div><h3>تقرير المقبوضات</h3><p>الدفعات والمبالغ المحصلة وطرق الدفع.</p></div>
+          <div class="entity-card"><div class="entity-icon">◴</div><h3>تقرير الديون</h3><p>الديون المسددة والمتبقية حسب الزبون.</p></div>
+          <div class="entity-card"><div class="entity-icon">♙</div><h3>تقرير الزبائن</h3><p>نشاط الزبائن وطلباتهم ومدفوعاتهم.</p></div>
+        </div>
+        <div class="card"><div class="card-head"><h3>نموذج تقرير المبيعات</h3><div class="actions"><input class="input" type="date" style="width:145px"><input class="input" type="date" style="width:145px"><button class="btn btn-primary btn-sm" onclick="toast('تم تحديث التقرير')">عرض</button></div></div><div class="card-body">
+          <div class="mini-stats"><div class="mini-stat">إجمالي المبيعات<strong>4,850 ₪</strong></div><div class="mini-stat">إجمالي المقبوضات<strong>3,400 ₪</strong></div><div class="mini-stat">إجمالي المتبقي<strong>1,450 ₪</strong></div></div>
+          <div class="grid-equal"><div><div class="chart"><div class="bar-group"><div class="bar" style="height:45%"></div><span>السبت</span></div><div class="bar-group"><div class="bar" style="height:67%"></div><span>الأحد</span></div><div class="bar-group"><div class="bar" style="height:54%"></div><span>الاثنين</span></div><div class="bar-group"><div class="bar" style="height:83%"></div><span>الثلاثاء</span></div><div class="bar-group"><div class="bar" style="height:72%"></div><span>الأربعاء</span></div></div></div>
+          <div class="table-wrap"><table class="table"><thead><tr><th>الطلب</th><th>الزبون</th><th>القيمة</th><th>الحالة</th></tr></thead><tbody id="reportOrders"></tbody></table></div></div>
+        </div></div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="page-head"><div><h2>الإعدادات</h2><p>تخصيص بيانات المحل وطريقة ظهور الطلبات.</p></div></div>
+        <div class="card"><div class="card-head"><h3>إعدادات المحل</h3></div><div class="card-body"><form class="form-grid" onsubmit="saveSettings(event)">
+          <div class="form-group"><label>اسم المحل</label><input class="input" id="shopName" value="محلي لإدارة الأعمال"></div>
+          <div class="form-group"><label>رقم الهاتف</label><input class="input" value="0599 000 000"></div>
+          <div class="form-group"><label>العنوان</label><input class="input" value="غزة - فلسطين"></div>
+          <div class="form-group"><label>العملة</label><select class="select"><option>شيكل ₪</option></select></div>
+          <div class="form-group"><label>شعار المحل</label><input class="input" type="file" accept="image/*"></div>
+          <div class="form-group"><label>تنسيق رقم الطلب</label><input class="input" value="ORD-{NUMBER}"></div>
+          <div class="form-group full"><label>طرق الدفع المتاحة</label><div class="actions"><label class="switch"><input type="checkbox" checked> نقدي</label><label class="switch"><input type="checkbox" checked> تحويل</label><label class="switch"><input type="checkbox" checked> أخرى</label></div></div>
+          <div class="full"><button class="btn btn-primary">✓ حفظ الإعدادات</button></div>
+        </form></div></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClose(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-head"><h3 id="modalTitle"></h3><button class="modal-close" onclick="closeModal()">×</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const today=new Date().toISOString().split("T")[0];
+let categories=[
+  {id:1,name:"بوظة",desc:"المنتجات الباردة وأحجام البوظة",count:3,active:true,icon:"🍨"},
+  {id:2,name:"مشروبات",desc:"العصائر والمياه والمشروبات",count:2,active:true,icon:"🥤"},
+  {id:3,name:"غسيل ملابس",desc:"خدمات الغسيل والكوي",count:3,active:true,icon:"👕"},
+  {id:4,name:"غسيل سجاد وبطانيات",desc:"خدمات القطع الكبيرة",count:2,active:true,icon:"▤"}
+];
+let products=[
+  {id:1,name:"بوظة صغيرة",category:"بوظة",type:"منتج",unit:"كوب",price:5,active:true},
+  {id:2,name:"بوظة وسط",category:"بوظة",type:"منتج",unit:"كوب",price:8,active:true},
+  {id:3,name:"بوظة عائلية",category:"بوظة",type:"منتج",unit:"علبة",price:25,active:true},
+  {id:4,name:"عصير",category:"مشروبات",type:"منتج",unit:"كوب",price:6,active:true},
+  {id:5,name:"مياه",category:"مشروبات",type:"منتج",unit:"علبة",price:2,active:true},
+  {id:6,name:"غسيل ملابس بالكيلو",category:"غسيل ملابس",type:"خدمة",unit:"كيلو",price:10,active:true},
+  {id:7,name:"غسيل وكوي",category:"غسيل ملابس",type:"خدمة",unit:"كيلو",price:15,active:true},
+  {id:8,name:"كوي فقط",category:"غسيل ملابس",type:"خدمة",unit:"خدمة",price:10,active:true},
+  {id:9,name:"غسيل بطانية",category:"غسيل سجاد وبطانيات",type:"خدمة",unit:"قطعة",price:30,active:true},
+  {id:10,name:"غسيل سجادة",category:"غسيل سجاد وبطانيات",type:"خدمة",unit:"متر",price:12,active:true}
+];
+let orders=[
+  {id:"ORD-1005",date:"2026-07-14",customer:"أحمد محمد",phone:"0599 123 456",total:100,paid:40,status:"مدفوع جزئيًا",items:[{name:"غسيل ملابس بالكيلو",unit:"كيلو",qty:4,price:10},{name:"غسيل بطانية",unit:"قطعة",qty:1,price:30},{name:"كوي فقط",unit:"خدمة",qty:3,price:10}]},
+  {id:"ORD-1004",date:"2026-07-14",customer:"زبون نقدي",phone:"—",total:45,paid:45,status:"مدفوع بالكامل",items:[{name:"بوظة عائلية",unit:"علبة",qty:1,price:25},{name:"بوظة صغيرة",unit:"كوب",qty:4,price:5}]},
+  {id:"ORD-1003",date:"2026-07-13",customer:"محمد علي",phone:"0598 654 321",total:120,paid:0,status:"غير مدفوع",items:[{name:"غسيل وكوي",unit:"كيلو",qty:8,price:15}]},
+  {id:"ORD-1002",date:"2026-07-13",customer:"يوسف خالد",phone:"0569 111 222",total:80,paid:50,status:"مدفوع جزئيًا",items:[{name:"غسيل بطانية",unit:"قطعة",qty:2,price:30},{name:"كوي فقط",unit:"خدمة",qty:2,price:10}]},
+  {id:"ORD-1001",date:"2026-07-12",customer:"محمود حسن",phone:"0597 333 444",total:60,paid:60,status:"مدفوع بالكامل",items:[{name:"بوظة وسط",unit:"كوب",qty:5,price:8},{name:"عصير",unit:"كوب",qty:2,price:6},{name:"مياه",unit:"علبة",qty:4,price:2}]}
+];
+let payments=[
+  {id:"PAY-007",date:"2026-07-14",customer:"أحمد محمد",order:"ORD-1005",amount:40,method:"نقدي",user:"محمد أحمد",note:"دفعة عند إنشاء الطلب"},
+  {id:"PAY-006",date:"2026-07-14",customer:"زبون نقدي",order:"ORD-1004",amount:45,method:"نقدي",user:"محمد أحمد",note:"تم السداد كاملًا"},
+  {id:"PAY-005",date:"2026-07-13",customer:"يوسف خالد",order:"ORD-1002",amount:20,method:"تحويل",user:"محمد أحمد",note:"دفعة لاحقة"},
+  {id:"PAY-004",date:"2026-07-13",customer:"يوسف خالد",order:"ORD-1002",amount:30,method:"نقدي",user:"محمد أحمد",note:"دفعة أولى"},
+  {id:"PAY-003",date:"2026-07-12",customer:"محمود حسن",order:"ORD-1001",amount:60,method:"نقدي",user:"محمد أحمد",note:"سداد كامل"}
+];
+let customers=[
+  {name:"أحمد محمد",phone:"0599 123 456",address:"غزة - الرمال",notes:"زبون دائم"},
+  {name:"محمد علي",phone:"0598 654 321",address:"غزة - النصر",notes:""},
+  {name:"يوسف خالد",phone:"0569 111 222",address:"غزة - الشجاعية",notes:""},
+  {name:"محمود حسن",phone:"0597 333 444",address:"غزة - تل الهوى",notes:""},
+  {name:"زبون نقدي",phone:"—",address:"—",notes:"لا يسمح بتسجيل مبلغ متبقٍ"}
+];
+let currentItems=[
+  {name:"غسيل ملابس بالكيلو",unit:"كيلو",qty:4,price:10},
+  {name:"غسيل بطانية",unit:"قطعة",qty:1,price:30},
+  {name:"كوي فقط",unit:"خدمة",qty:3,price:10}
+];
+
+const money=n=>Number(n||0).toLocaleString("ar-EG")+" ₪";
+const remaining=o=>Math.max(0,o.total-o.paid);
+const statusClass=s=>s==="مدفوع بالكامل"||s==="مسدد"?"paid":s==="مدفوع جزئيًا"?"partial":"unpaid";
+function setStatus(o){o.paid=Math.min(o.total,Math.max(0,o.paid));o.status=o.paid<=0?"غير مدفوع":o.paid>=o.total?"مدفوع بالكامل":"مدفوع جزئيًا"}
+function toast(message,type="success"){
+  const el=document.createElement("div");el.className="toast "+type;el.textContent=(type==="success"?"✓ ":"⚠ ")+message;
+  document.getElementById("toastContainer").appendChild(el);setTimeout(()=>el.remove(),3200)
+}
+function goPage(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-"+page).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===page));
+  const active=document.querySelector(`.nav-item[data-page="${page}"]`);
+  document.getElementById("pageTitle").textContent=active?active.textContent.trim():"النظام";
+  document.getElementById("sidebar").classList.remove("open");document.getElementById("mobileOverlay").classList.remove("show");
+  window.scrollTo(0,0);renderAll()
+}
+document.querySelectorAll(".nav-item").forEach(n=>n.onclick=()=>goPage(n.dataset.page));
+document.getElementById("menuToggle").onclick=()=>{sidebar.classList.toggle("open");mobileOverlay.classList.toggle("show")};
+document.getElementById("mobileOverlay").onclick=()=>{sidebar.classList.remove("open");mobileOverlay.classList.remove("show")};
+
+function openModal(title,body,footer="",large=false){
+  modalTitle.textContent=title;modalBody.innerHTML=body;modalFooter.innerHTML=footer;
+  modalBox.classList.toggle("large",large);modalOverlay.classList.add("show")
+}
+function closeModal(){modalOverlay.classList.remove("show")}
+function overlayClose(e){if(e.target===modalOverlay)closeModal()}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+
+function renderCategories(){
+  categoryGrid.innerHTML=categories.map(c=>`<div class="entity-card"><div class="entity-icon">${c.icon}</div><div style="display:flex;justify-content:space-between"><h3>${c.name}</h3><span class="badge ${c.active?"active-badge":"inactive"}">${c.active?"فعال":"غير فعال"}</span></div><p>${c.desc||"قسم مخصص لتنظيم الأصناف والخدمات"}</p><div class="entity-footer"><span>${c.count} أصناف وخدمات</span><div class="actions"><button class="btn btn-light btn-sm" onclick="editCategory(${c.id})">تعديل</button><button class="btn btn-light btn-sm" onclick="toggleCategory(${c.id})">${c.active?"تعطيل":"تفعيل"}</button></div></div></div>`).join("");
+  const options=categories.map(c=>`<option>${c.name}</option>`).join("");
+  productCategoryFilter.innerHTML='<option value="">جميع الأقسام</option>'+options
+}
+function openCategoryModal(id=null){
+  const c=categories.find(x=>x.id===id);
+  openModal(c?"تعديل القسم":"إضافة قسم جديد",`<div class="form-grid"><div class="form-group full"><label>اسم القسم</label><input class="input" id="categoryName" value="${c?c.name:""}" placeholder="مثال: خدمات التوصيل"></div><div class="form-group full"><label>وصف اختياري</label><textarea class="textarea" id="categoryDesc" rows="3">${c?c.desc:""}</textarea></div><div class="form-group full"><label>الحالة</label><select class="select" id="categoryActive"><option value="1">فعال</option><option value="0" ${c&&!c.active?"selected":""}>غير فعال</option></select></div></div>`,`<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveCategory(${id||"null"})">حفظ القسم</button>`)
+}
+function editCategory(id){openCategoryModal(id)}
+function saveCategory(id){
+  const name=categoryName.value.trim();if(!name)return toast("أدخل اسم القسم","error");
+  if(id){let c=categories.find(x=>x.id===id);c.name=name;c.desc=categoryDesc.value;c.active=categoryActive.value==="1"}
+  else categories.push({id:Date.now(),name,desc:categoryDesc.value,count:0,active:categoryActive.value==="1",icon:"▤"});
+  closeModal();renderCategories();toast("تم حفظ بيانات القسم")
+}
+function toggleCategory(id){let c=categories.find(x=>x.id===id);c.active=!c.active;renderCategories();toast(c.active?"تم تفعيل القسم":"تم تعطيل القسم")}
+
+function renderProducts(){
+  const q=(productSearch?.value||"").trim(),cat=productCategoryFilter?.value||"",type=productTypeFilter?.value||"";
+  const list=products.filter(p=>(!q||p.name.includes(q))&&(!cat||p.category===cat)&&(!type||p.type===type));
+  productsTable.innerHTML=list.map(p=>`<tr><td><b>${p.name}</b></td><td>${p.category}</td><td><span class="badge info">${p.type}</span></td><td>${p.unit}</td><td><b>${money(p.price)}</b></td><td><span class="badge ${p.active?"active-badge":"inactive"}">${p.active?"فعال":"غير فعال"}</span></td><td><div class="actions"><button class="btn btn-light btn-sm" onclick="openProductModal(${p.id})">تعديل</button><button class="btn btn-light btn-sm" onclick="toggleProduct(${p.id})">${p.active?"تعطيل":"تفعيل"}</button></div></td></tr>`).join("")||'<tr><td colspan="7" class="empty">لا توجد نتائج مطابقة</td></tr>'
+}
+function openProductModal(id=null){
+  const p=products.find(x=>x.id===id),opts=categories.map(c=>`<option ${p&&p.category===c.name?"selected":""}>${c.name}</option>`).join("");
+  openModal(p?"تعديل الصنف أو الخدمة":"إضافة صنف أو خدمة",`<div class="form-grid">
+    <div class="form-group full"><label>الاسم</label><input class="input" id="pName" value="${p?p.name:""}"></div>
+    <div class="form-group"><label>القسم</label><select class="select" id="pCategory">${opts}</select></div>
+    <div class="form-group"><label>النوع</label><select class="select" id="pType"><option ${p?.type==="منتج"?"selected":""}>منتج</option><option ${p?.type==="خدمة"?"selected":""}>خدمة</option></select></div>
+    <div class="form-group"><label>الوحدة</label><select class="select" id="pUnit">${["قطعة","كيلو","كوب","علبة","متر","خدمة"].map(u=>`<option ${p?.unit===u?"selected":""}>${u}</option>`).join("")}</select></div>
+    <div class="form-group"><label>سعر البيع</label><input class="input" id="pPrice" type="number" min="0" value="${p?p.price:""}"></div>
+    <div class="form-group"><label>الحالة</label><select class="select" id="pActive"><option value="1">فعال</option><option value="0" ${p&&!p.active?"selected":""}>غير فعال</option></select></div>
+    <div class="form-group full"><label>ملاحظات</label><textarea class="textarea" rows="2"></textarea></div></div>`,`<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveProduct(${id||"null"})">حفظ</button>`)
+}
+function saveProduct(id){
+  if(!pName.value.trim()||!pPrice.value)return toast("أكمل اسم الصنف وسعره","error");
+  const data={name:pName.value.trim(),category:pCategory.value,type:pType.value,unit:pUnit.value,price:+pPrice.value,active:pActive.value==="1"};
+  if(id)Object.assign(products.find(x=>x.id===id),data);else products.push({id:Date.now(),...data});
+  closeModal();renderProducts();toast("تم حفظ الصنف أو الخدمة")
+}
+function toggleProduct(id){let p=products.find(x=>x.id===id);p.active=!p.active;renderProducts();toast("تم تحديث حالة الصنف")}
+
+function renderOrderItems(){
+  orderItemsTable.innerHTML=currentItems.map((i,index)=>`<tr><td><b>${i.name}</b></td><td>${i.unit}</td><td><input class="input" style="width:75px" type="number" min="0.1" step="0.1" value="${i.qty}" onchange="updateItem(${index},'qty',this.value)"></td><td><input class="input" style="width:85px" type="number" min="0" value="${i.price}" onchange="updateItem(${index},'price',this.value)"></td><td><b>${money(i.qty*i.price)}</b></td><td><button class="btn btn-light btn-sm" onclick="removeItem(${index})">🗑</button></td></tr>`).join("")||'<tr><td colspan="6" class="empty">أضف صنفًا أو خدمة إلى الطلب</td></tr>';
+  calculateOrder()
+}
+function updateItem(i,key,value){currentItems[i][key]=Math.max(0,+value);renderOrderItems()}
+function removeItem(i){currentItems.splice(i,1);renderOrderItems()}
+function openItemModal(){
+  openModal("إضافة صنف أو خدمة",`<div class="form-grid"><div class="form-group full"><label>اختر الصنف أو الخدمة</label><select class="select" id="selectedProduct">${products.filter(p=>p.active).map(p=>`<option value="${p.id}">${p.name} — ${money(p.price)} / ${p.unit}</option>`).join("")}</select></div><div class="form-group"><label>الكمية</label><input class="input" id="selectedQty" type="number" min="0.1" step="0.1" value="1"></div></div>`,`<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="addSelectedItem()">إضافة للطلب</button>`)
+}
+function addSelectedItem(){const p=products.find(x=>x.id==selectedProduct.value);currentItems.push({name:p.name,unit:p.unit,qty:+selectedQty.value||1,price:p.price});closeModal();renderOrderItems();toast("تمت إضافة العنصر")}
+function openCustomItemModal(){
+  openModal("إضافة عنصر مخصص",`<div class="form-grid"><div class="form-group full"><label>الوصف</label><input class="input" id="customName" placeholder="اكتب اسم المنتج أو الخدمة"></div><div class="form-group"><label>الوحدة</label><select class="select" id="customUnit"><option>قطعة</option><option>كيلو</option><option>متر</option><option>خدمة</option></select></div><div class="form-group"><label>الكمية</label><input class="input" id="customQty" type="number" min="0.1" step="0.1" value="1"></div><div class="form-group"><label>السعر</label><input class="input" id="customPrice" type="number" min="0"></div></div>`,`<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="addCustomItem()">إضافة</button>`)
+}
+function addCustomItem(){if(!customName.value.trim()||!customPrice.value)return toast("أكمل وصف العنصر وسعره","error");currentItems.push({name:customName.value.trim(),unit:customUnit.value,qty:+customQty.value||1,price:+customPrice.value});closeModal();renderOrderItems();toast("تمت إضافة العنصر المخصص")}
+function calculateOrder(){
+  const sub=currentItems.reduce((s,i)=>s+i.qty*i.price,0),disc=Math.min(sub,Math.max(0,+discount.value||0)),total=sub-disc;
+  let paid=Math.max(0,+paidNow.value||0),isCash=cashCustomer.checked||orderCustomer.value==="زبون نقدي";
+  if(isCash&&paid<total)paid=total;if(paid>total)paid=total;paidNow.value=paid;
+  const rem=total-paid,status=paid<=0?"غير مدفوع":paid>=total?"مدفوع بالكامل":"مدفوع جزئيًا";
+  subtotal.textContent=money(sub);finalTotal.textContent=money(total);remainingAmount.textContent=money(rem);paymentStatus.textContent=status;paymentStatus.className="badge "+statusClass(status);
+  debtNotice.style.display=rem>0?"block":"none"
+}
+function toggleCashCustomer(){if(cashCustomer.checked){orderCustomer.value="زبون نقدي";orderPhone.value="—"}calculateOrder()}
+function customerChanged(){const c=customers.find(x=>x.name===orderCustomer.value);orderPhone.value=c?.phone||"";cashCustomer.checked=orderCustomer.value==="زبون نقدي";calculateOrder()}
+function resetOrder(){currentItems=[];discount.value=0;paidNow.value=0;renderOrderItems();toast("تم إفراغ الطلب")}
+function saveOrder(print){
+  if(!currentItems.length)return toast("أضف عنصرًا واحدًا على الأقل","error");
+  const total=currentItems.reduce((s,i)=>s+i.qty*i.price,0)-(+discount.value||0),paid=+paidNow.value||0,customer=orderCustomer.value;
+  if(customer==="زبون نقدي"&&paid<total)return toast("لا يمكن أن يكون على الزبون النقدي مبلغ متبقٍ","error");
+  const id="ORD-"+(1001+orders.length),o={id,date:orderDate.value||today,customer,phone:orderPhone.value,total,paid,items:currentItems.map(x=>({...x}))};setStatus(o);orders.unshift(o);
+  if(paid>0)payments.unshift({id:"PAY-"+String(payments.length+1).padStart(3,"0"),date:o.date,customer,order:id,amount:paid,method:"نقدي",user:"محمد أحمد",note:"دفعة عند إنشاء الطلب"});
+  toast("تم حفظ الطلب بنجاح");if(print)setTimeout(()=>window.print(),350);currentItems=[];renderAll();setTimeout(()=>goPage("orders"),500)
+}
+
+function renderOrders(){
+  const q=(orderSearch?.value||"").trim(),st=orderStatusFilter?.value||"";
+  const list=orders.filter(o=>(!q||o.id.includes(q)||o.customer.includes(q))&&(!st||o.status===st));
+  ordersTable.innerHTML=list.map(o=>`<tr><td><b>${o.id}</b></td><td>${o.date}</td><td>${o.customer}</td><td>${o.items.length}</td><td><b>${money(o.total)}</b></td><td>${money(o.paid)}</td><td style="color:${remaining(o)>0?"var(--danger)":"var(--success)"}"><b>${money(remaining(o))}</b></td><td><span class="badge ${statusClass(o.status)}">${o.status}</span></td><td><div class="actions"><button class="btn btn-light btn-sm" onclick="showOrder('${o.id}')">عرض</button>${remaining(o)>0?`<button class="btn btn-primary btn-sm" onclick="openPaymentModal('${o.id}')">دفعة</button>`:""}<button class="btn btn-light btn-sm" onclick="printItem('الطلب ${o.id}')">🖨</button><button class="btn btn-light btn-sm" onclick="toast('يمكن تعديل الطلب في النظام النهائي')">تعديل</button></div></td></tr>`).join("")||'<tr><td colspan="9" class="empty">لا توجد طلبات مطابقة</td></tr>';
+  recentOrders.innerHTML=orders.slice(0,4).map(o=>`<tr><td>${o.id}</td><td>${o.customer}</td><td>${money(o.total)}</td><td>${money(remaining(o))}</td><td><span class="badge ${statusClass(o.status)}">${o.status}</span></td></tr>`).join("");
+  reportOrders.innerHTML=orders.slice(0,5).map(o=>`<tr><td>${o.id}</td><td>${o.customer}</td><td>${money(o.total)}</td><td><span class="badge ${statusClass(o.status)}">${o.status}</span></td></tr>`).join("")
+}
+function showOrder(id){
+  const o=orders.find(x=>x.id===id),ops=payments.filter(p=>p.order===id);
+  openModal("تفاصيل الطلب "+id,`<div class="mini-stats"><div class="mini-stat">إجمالي الطلب<strong>${money(o.total)}</strong></div><div class="mini-stat">إجمالي المدفوع<strong>${money(o.paid)}</strong></div><div class="mini-stat">المتبقي<strong style="color:var(--danger)">${money(remaining(o))}</strong></div></div>
+  <div class="form-grid" style="margin-bottom:15px"><div><small>الزبون</small><b style="display:block">${o.customer}</b></div><div><small>التاريخ</small><b style="display:block">${o.date}</b></div></div>
+  <h4>الأصناف والخدمات</h4><div class="table-wrap"><table class="table"><thead><tr><th>العنصر</th><th>الوحدة</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${o.items.map(i=>`<tr><td>${i.name}</td><td>${i.unit}</td><td>${i.qty}</td><td>${money(i.price)}</td><td>${money(i.qty*i.price)}</td></tr>`).join("")}</tbody></table></div>
+  <h4>الدفعات المسجلة</h4><div class="table-wrap"><table class="table"><thead><tr><th>الدفعة</th><th>التاريخ</th><th>المبلغ</th><th>الطريقة</th></tr></thead><tbody>${ops.map(p=>`<tr><td>${p.id}</td><td>${p.date}</td><td>${money(p.amount)}</td><td>${p.method}</td></tr>`).join("")||'<tr><td colspan="4">لا توجد دفعات</td></tr>'}</tbody></table></div>`,
+  `<button class="btn btn-light" onclick="printItem('الطلب ${id}')">🖨 طباعة</button>${remaining(o)>0?`<button class="btn btn-primary" onclick="closeModal();openPaymentModal('${id}')">تسجيل دفعة</button>`:""}`,true)
+}
+
+function renderCustomers(){
+  const q=(customerSearch?.value||"").trim();
+  customersTable.innerHTML=customers.filter(c=>!q||c.name.includes(q)||c.phone.includes(q)).map(c=>{
+    const co=orders.filter(o=>o.customer===c.name),total=co.reduce((s,o)=>s+o.total,0),paid=co.reduce((s,o)=>s+o.paid,0);
+    return `<tr><td><b>${c.name}</b></td><td>${c.phone}</td><td>${co.length}</td><td>${money(total)}</td><td>${money(paid)}</td><td><b style="color:${total-paid>0?"var(--danger)":"var(--success)"}">${money(total-paid)}</b></td><td><button class="btn btn-light btn-sm" onclick="showCustomer('${c.name}')">عرض التفاصيل</button></td></tr>`
+  }).join("")
+}
+function openCustomerModal(){
+  openModal("إضافة زبون",`<div class="form-grid"><div class="form-group"><label>الاسم</label><input class="input" id="cName"></div><div class="form-group"><label>الهاتف</label><input class="input" id="cPhone"></div><div class="form-group full"><label>العنوان</label><input class="input" id="cAddress"></div><div class="form-group full"><label>ملاحظات</label><textarea class="textarea" id="cNotes" rows="3"></textarea></div></div>`,`<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="saveCustomer()">حفظ الزبون</button>`)
+}
+function saveCustomer(){if(!cName.value.trim()||!cPhone.value.trim())return toast("أدخل اسم الزبون ورقم الهاتف","error");customers.push({name:cName.value.trim(),phone:cPhone.value.trim(),address:cAddress.value,notes:cNotes.value});closeModal();renderCustomers();toast("تمت إضافة الزبون")}
+function showCustomer(name){
+  const c=customers.find(x=>x.name===name),co=orders.filter(o=>o.customer===name),cp=payments.filter(p=>p.customer===name),total=co.reduce((s,o)=>s+o.total,0),paid=co.reduce((s,o)=>s+o.paid,0);
+  openModal("صفحة الزبون",`<div class="customer-header"><div class="customer-avatar">${name.charAt(0)}</div><div><h2 style="margin:0">${name}</h2><div style="color:var(--muted)">${c.phone} · ${c.address}</div></div></div>
+  <div class="mini-stats"><div class="mini-stat">إجمالي الطلبات<strong>${money(total)}</strong></div><div class="mini-stat">إجمالي المدفوع<strong>${money(paid)}</strong></div><div class="mini-stat">المتبقي الحالي<strong style="color:var(--danger)">${money(total-paid)}</strong></div></div>
+  <div class="tabs"><button class="tab active" onclick="customerTab(this,'customerOrders')">الطلبات</button><button class="tab" onclick="customerTab(this,'customerPayments')">الدفعات</button></div>
+  <div id="customerOrders"><div class="timeline">${co.map(o=>`<div class="timeline-item"><div style="display:flex;justify-content:space-between"><b>${o.id}</b><span>${o.date}</span></div><small>${o.items.map(i=>i.name).join("، ")}</small><div style="margin-top:6px">الإجمالي: <b>${money(o.total)}</b> · المتبقي: <b>${money(remaining(o))}</b></div></div>`).join("")||'<div class="empty">لا توجد طلبات</div>'}</div></div>
+  <div id="customerPayments" style="display:none"><div class="timeline">${cp.map(p=>`<div class="timeline-item"><div style="display:flex;justify-content:space-between"><b>${money(p.amount)}</b><span>${p.date}</span></div><small>${p.id} · ${p.order} · ${p.method}</small></div>`).join("")||'<div class="empty">لا توجد دفعات</div>'}</div></div>`,`<button class="btn btn-light" onclick="closeModal()">إغلاق</button>`,true)
+}
+function customerTab(btn,id){btn.parentElement.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");customerOrders.style.display=id==="customerOrders"?"block":"none";customerPayments.style.display=id==="customerPayments"?"block":"none"}
+
+function renderDebts(){
+  const st=debtStatusFilter?.value||"",q=(debtCustomerFilter?.value||"").trim();
+  const all=orders.map(o=>({...o,debtStatus:remaining(o)<=0?"مسدد":o.paid>0?"مدفوع جزئيًا":"غير مدفوع"}));
+  const list=all.filter(o=>(!st||o.debtStatus===st)&&(!q||o.customer.includes(q)));
+  debtsTable.innerHTML=list.map(o=>`<tr><td><b>${o.customer}</b></td><td>${o.phone}</td><td>${o.id}</td><td>${money(o.total)}</td><td>${money(o.paid)}</td><td><b style="color:${remaining(o)>0?"var(--danger)":"var(--success)"}">${money(remaining(o))}</b></td><td>${o.date}</td><td><span class="badge ${statusClass(o.debtStatus)}">${o.debtStatus}</span></td><td>${remaining(o)>0?`<button class="btn btn-primary btn-sm" onclick="openPaymentModal('${o.id}')">تسجيل دفعة</button>`:"—"}</td></tr>`).join("");
+  const open=orders.filter(o=>remaining(o)>0);totalDebts.textContent=money(open.reduce((s,o)=>s+remaining(o),0));unsettledCount.textContent=open.length;debtorCount.textContent=new Set(open.map(o=>o.customer)).size;
+  dashboardDebt.textContent=money(open.reduce((s,o)=>s+remaining(o),0))
+}
+function openPaymentModal(id){
+  const o=orders.find(x=>x.id===id),rem=remaining(o);
+  openModal("تسجيل دفعة جديدة",`<div class="notice">الدفعة مرتبطة بالطلب المحدد، وسيُحدّث المتبقي وحالة الدين تلقائيًا.</div><div class="form-grid">
+    <div class="form-group"><label>اسم الزبون</label><input class="input" value="${o.customer}" disabled></div><div class="form-group"><label>رقم الطلب</label><input class="input" value="${o.id}" disabled></div>
+    <div class="form-group"><label>إجمالي الطلب</label><input class="input" value="${money(o.total)}" disabled></div><div class="form-group"><label>المدفوع سابقًا</label><input class="input" value="${money(o.paid)}" disabled></div>
+    <div class="form-group"><label>المتبقي قبل الدفعة</label><input class="input" value="${money(rem)}" disabled></div><div class="form-group"><label>مبلغ الدفعة الجديدة</label><input class="input" id="newPaymentAmount" type="number" min="1" max="${rem}" value="${rem}" oninput="updateAfterPayment(${rem})"></div>
+    <div class="form-group"><label>المتبقي بعد الدفعة</label><input class="input" id="afterPayment" value="0 ₪" disabled></div><div class="form-group"><label>طريقة الدفع</label><select class="select" id="newPaymentMethod"><option>نقدي</option><option>تحويل</option><option>أخرى</option></select></div>
+    <div class="form-group"><label>تاريخ الدفع</label><input class="input" id="newPaymentDate" type="date" value="${today}"></div><div class="form-group full"><label>ملاحظات</label><textarea class="textarea" id="newPaymentNote" rows="2"></textarea></div></div>`,
+    `<button class="btn btn-light" onclick="closeModal()">إلغاء</button><button class="btn btn-primary" onclick="savePayment('${id}')">حفظ الدفعة</button>`)
+}
+function updateAfterPayment(rem){const v=Math.max(0,+newPaymentAmount.value||0);afterPayment.value=money(Math.max(0,rem-v));if(v>rem){newPaymentAmount.style.borderColor="var(--danger)"}else newPaymentAmount.style.borderColor=""}
+function savePayment(id){
+  const o=orders.find(x=>x.id===id),rem=remaining(o),amount=+newPaymentAmount.value||0;
+  if(amount<=0)return toast("أدخل مبلغ دفعة صحيحًا","error");if(amount>rem)return toast("لا يمكن أن تكون الدفعة أكبر من المبلغ المتبقي","error");
+  o.paid+=amount;setStatus(o);payments.unshift({id:"PAY-"+String(payments.length+1).padStart(3,"0"),date:newPaymentDate.value||today,customer:o.customer,order:o.id,amount,method:newPaymentMethod.value,user:"محمد أحمد",note:newPaymentNote.value});
+  closeModal();renderAll();toast("تم تسجيل الدفعة وتحديث المتبقي بنجاح")
+}
+function renderPayments(){
+  const q=(paymentCustomerFilter?.value||"").trim(),method=paymentMethodFilter?.value||"";
+  const list=payments.filter(p=>(!q||p.customer.includes(q))&&(!method||p.method===method));
+  paymentsTable.innerHTML=list.map(p=>`<tr><td><b>${p.id}</b></td><td>${p.date}</td><td>${p.customer}</td><td>${p.order}</td><td><b style="color:var(--success)">${money(p.amount)}</b></td><td>${p.method}</td><td>${p.user}</td><td><div class="actions"><button class="btn btn-light btn-sm" onclick="showPayment('${p.id}')">عرض</button><button class="btn btn-light btn-sm" onclick="printItem('إيصال ${p.id}')">🖨 إيصال</button></div></td></tr>`).join("");
+  recentPayments.innerHTML=payments.slice(0,4).map(p=>`<tr><td>${p.id}</td><td>${p.customer}</td><td>${p.order}</td><td><b style="color:var(--success)">${money(p.amount)}</b></td><td>${p.method}</td><td>${p.date}</td></tr>`).join("")
+}
+function showPayment(id){const p=payments.find(x=>x.id===id);openModal("تفاصيل الدفعة "+id,`<div class="remaining-box" style="background:var(--primary-soft)"><span>المبلغ المدفوع</span><strong style="color:var(--primary)">${money(p.amount)}</strong></div><div class="form-grid"><div><small>الزبون</small><b style="display:block">${p.customer}</b></div><div><small>رقم الطلب</small><b style="display:block">${p.order}</b></div><div><small>التاريخ</small><b style="display:block">${p.date}</b></div><div><small>طريقة الدفع</small><b style="display:block">${p.method}</b></div><div class="full"><small>ملاحظات</small><b style="display:block">${p.note||"لا توجد ملاحظات"}</b></div></div>`,`<button class="btn btn-light" onclick="printItem('إيصال ${id}')">🖨 طباعة إيصال</button><button class="btn btn-primary" onclick="closeModal()">إغلاق</button>`)}
+function printItem(name){toast("جارٍ تجهيز "+name);setTimeout(()=>window.print(),350)}
+function featureSoon(){toast("ستتوفر هذه الخاصية في النظام النهائي.")}
+function saveSettings(e){e.preventDefault();brandName.textContent=shopName.value||"اسم المحل";localStorage.setItem("prototypeShopName",brandName.textContent);toast("تم حفظ الإعدادات")}
+function renderAll(){renderCategories();renderProducts();renderOrderItems();renderOrders();renderCustomers();renderDebts();renderPayments()}
+orderDate.value=today;
+const savedShop=localStorage.getItem("prototypeShopName");if(savedShop){brandName.textContent=savedShop;shopName.value=savedShop}
+renderAll();
+</script>
+</body>
+</html>
